@@ -9,6 +9,14 @@ contract Pension {
     uint pension = 0;
     uint retireDate;
 
+    //enum for salary class
+    enum salary_class {
+        ClassD,
+        ClassC,
+        ClassB,
+        ClassA
+    }
+
     //we will give address and initalSalary at time of deploying smart contract
     //we are deploying contract when the employee is hired
     constructor(address _person, uint _initSal) {
@@ -22,20 +30,22 @@ contract Pension {
     //only deployer should be able to do this
     //do some calculation for getting current salary
     //set currentSalary to calculated salary
-    function increaseSalary(uint yrsOfWork) external {
+    function increaseSalary(uint yrsOfWork, salary_class _class) external {
         require(msg.sender == owner, "Only deployer can change salary");
         uint _currentSalary = currentSalary;
-        uint _percentIncr = 0;
+
+        //depending on class, initial percent starts with 0, 2, 4, 6 for respective grades
+        uint _percentIncr = uint(_class) * 2;
 
         //scope of improving the increase_salary logic
         if (yrsOfWork <= 1) {
-            _percentIncr = 5;
+            _percentIncr += 5;
         } else if (yrsOfWork <= 5) {
-            _percentIncr = 10;
+            _percentIncr += 10;
         } else if (yrsOfWork <= 10) {
-            _percentIncr = 15;
+            _percentIncr += 15;
         } else {
-            _percentIncr = 20;
+            _percentIncr += 20;
         }
 
         _currentSalary =
