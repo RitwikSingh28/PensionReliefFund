@@ -18,13 +18,27 @@ contract Company {
         salary_class class;
         uint timeSinceClassChange;
         uint experience;
-        uint flag;
+        bool flag;
     }
 
     mapping(address => Employee) public employeeList;
 
     constructor(address _fundContractAddress) {
         empFundContract = _fundContractAddress;
+    }
+
+
+     function addNewEmployee(address newEmpAccount,uint _initSal,salary_class _startClass) external{
+        require(msg.sender== owner,"Only deployer can add new employee");
+        Employee memory newEmp = Employee({
+            account : newEmpAccount,
+            currentSalary : _initSal,
+            class : _startClass,
+            timeSinceClassChange : 0,
+            experience : 0,
+            flag : true
+        });
+        employeeList[newEmpAccount] = newEmp;
     }
 
     //make a modifier if needed to set initial checks for repeated codes in various functions
@@ -38,7 +52,7 @@ contract Company {
     {
         require(msg.sender == owner, "Only deployer can change salary");
         require(
-            employeeList[empAccount].flag != 0,
+            employeeList[empAccount].flag == true,
             "This employee does not exist"
         );
         uint _timeSinceClassChange = _empl.timeSinceClassChange;
