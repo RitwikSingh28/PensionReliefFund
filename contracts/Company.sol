@@ -38,20 +38,20 @@ contract Company {
     }
 
     function addNewEmployee(
-        address newEmpAccount,
+        address payable newEmpAccount,
         uint _initSal,
         salary_class _startClass
     ) external onlyOwner {
         Employee memory newEmp = Employee({
-            account : newEmpAccount,
-            currentSalary : _initSal,
-            class : _startClass,
-            timeSinceClassChange : 0,
-            experience : 0,
-            flag : true,
-            isRetired : false,
-            paidSum :0,
-            pensionSum : 0
+            account: newEmpAccount,
+            currentSalary: _initSal,
+            class: _startClass,
+            timeSinceClassChange: 0,
+            experience: 0,
+            flag: true,
+            isRetired: false,
+            paidSum: 0,
+            pensionSum: 0
         });
         employeeList[newEmpAccount] = newEmp;
     }
@@ -103,7 +103,6 @@ contract Company {
         _empl.currentSalary = _currentSalary;
     }
 
-
     //this function transfers entire salary to employee account
     function sendAmount(address emplAccount) external payable {
         Employee storage _empl = employeeList[emplAccount];
@@ -116,5 +115,4 @@ contract Company {
         );
         require(sent, "Transaction failed");
     }
-
 }

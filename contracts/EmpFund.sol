@@ -2,7 +2,6 @@
 pragma solidity >=0.5.0 <0.9.0;
 
 contract PensionFund {
-
     address internal owner;
 
     mapping(address => uint) public funds;
@@ -31,31 +30,26 @@ contract PensionFund {
         (bool sent, ) = _empAddress.call{value: (_salary / 2)}("");
         require(sent, "Couldnt send money to employee");
 
-    //address payable public employeeEOA; //address of employee account
+        //address payable public employeeEOA; //address of employee account
 
-    //access the map
-   
-    //constructor() {
-    //   
-    //}
+        //access the map
 
-    //just receive salaries in the contract
-    //receive() external payable {
+        //constructor() {
+        //
+        //}
+
+        //just receive salaries in the contract
+        //receive() external payable {
         //mark the amount into the account
         // msg.value has the amount received
-        //split the salary 
+        //split the salary
         //add pension also
         // then use call pay function
-    //}
-
+    }
 
     //pay function to send half amount
 
     //getter function to see pension amount
 
-
-
     //function to make person retired
-
-   
 }
