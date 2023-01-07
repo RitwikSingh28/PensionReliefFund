@@ -19,6 +19,9 @@ contract Company {
         uint timeSinceClassChange;
         uint experience;
         bool flag;
+        bool isRetired;
+        uint paidSum;
+        uint pensionSum;
     }
 
     mapping(address => Employee) public employeeList;
@@ -40,12 +43,15 @@ contract Company {
         salary_class _startClass
     ) external onlyOwner {
         Employee memory newEmp = Employee({
-            account: payable(newEmpAccount),
-            currentSalary: _initSal,
-            class: _startClass,
-            timeSinceClassChange: 0,
-            experience: 0,
-            flag: true
+            account : newEmpAccount,
+            currentSalary : _initSal,
+            class : _startClass,
+            timeSinceClassChange : 0,
+            experience : 0,
+            flag : true,
+            isRetired : false,
+            paidSum :0,
+            pensionSum : 0
         });
         employeeList[newEmpAccount] = newEmp;
     }
@@ -97,10 +103,8 @@ contract Company {
         _empl.currentSalary = _currentSalary;
     }
 
-    //logic to get this month's salary from company to contract as per calculation done above
 
-    //this function transfers half of salary to employee account
-    //use call()
+    //this function transfers entire salary to employee account
     function sendAmount(address emplAccount) external payable {
         Employee storage _empl = employeeList[emplAccount];
         (bool sent, ) = empFundContract.call{value: _empl.currentSalary}(
@@ -113,10 +117,4 @@ contract Company {
         require(sent, "Transaction failed");
     }
 
-    //counter to store pension
-    // function storePension() external {}
-
-    //check if pensiongiving date occured
-    //transfer pension equally at certain intervals
-    //reset pension giving date to next month
 }

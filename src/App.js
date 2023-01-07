@@ -1,5 +1,12 @@
+import Navbar from "./Navbar";
+
 function App() {
-  return <h1 className="text-3xl font-bold underline">Hello world!</h1>;
+  return (
+    <>
+    <Navbar/>
+    Hello
+    </>
+  )
 }
 
 export default App;
