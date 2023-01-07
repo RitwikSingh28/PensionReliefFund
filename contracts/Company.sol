@@ -2,6 +2,8 @@
 pragma solidity >=0.5.0 <0.9.0;
 
 contract Pension {
+    address public owner; //company admin
+    address empFundContract; //employee fund contract address
     //enum for salary class
     enum salary_class {
         ClassD,
@@ -10,42 +12,44 @@ contract Pension {
         ClassA
     }
 
-    address public owner; //company admin
-    address public employeeFund; //address of employee smart contract
-    uint public currentSalary;
-    salary_class public class;
-    uint public timeSinceClassChange;
 
-    //we will give address and initalSalary at time of deploying smart contract
-    //we are deploying contract when the employee is hired
-    constructor(
-        address _employeeFund,
-        uint _initSal,
-        salary_class _class
-    ) {
-        owner = msg.sender;
-        employeeFund = _employeeFund;
-        currentSalary = _initSal;
-        class = _class;
-        timeSinceClassChange = block.timestamp;
+    struct Employee{
+        address account;
+        uint currentSalary;
+        salary_class class;
+        uint timeSinceClassChange;
+        uint experience;
     }
+
+    mapping(address=>Employee) public employeeList;
+    
+
+    constructor(address _fundContractAddress){
+        empFundContract = _fundContractAddress;
+    } 
+
+    //make a modifier if needed to set initial checks for repeated codes in various functions
 
     //function to increase salary
     //only deployer should be able to do this
     //set currentSalary to calculated salary
-    function increaseSalary(uint yrsOfWork, salary_class _class) external {
+    function increaseSalary(address empAccount,Employee memory _empl) external {
         require(msg.sender == owner, "Only deployer can change salary");
+        require(employeeList[empAccount] > 0,"This employee does not exist");
+        uint _timeSinceClassChange = _empl.timeSinceClassChange;
+        salary_class _class = _empl.class;
+        uint _currentSalary = _empl.currentSalary;
+        uint yrsOfWork = _empl.experience;
 
         //check if employee scales up in paygrade after a certain period of time, say 1 year
         if (
-            block.timestamp >= timeSinceClassChange + 365 days &&
-            class != salary_class.ClassA //no upgrade after reaching class A
+            block.timestamp >= _timeSinceClassChange + 365 days &&
+            _class != salary_class.ClassA //no upgrade after reaching class A
         ) {
-            class = salary_class(uint(class) + 1); //upgrade class by one
-            timeSinceClassChange = block.timestamp; //reset the timer after changing class
+            _class = salary_class(uint(_class) + 1); //upgrade class by one
+            _timeSinceClassChange = block.timestamp; //reset the timer after changing class
         }
 
-        uint _currentSalary = currentSalary;
         //depending on class, initial percent starts with 0, 2, 4, 6 for respective grades
         uint _percentIncr = uint(_class) * 2;
 
@@ -63,16 +67,18 @@ contract Pension {
         _currentSalary =
             _currentSalary +
             ((_currentSalary / 100) * _percentIncr);
-        currentSalary = _currentSalary;
+
+        _empl.currentSalary = _currentSalary;
     }
 
     //logic to get this month's salary from company to contract as per calculation done above
 
     //this function transfers half of salary to employee account
     //use call()
-    function sendAmount() external payable {
-        (bool sent,) = employeeFund.call{
-            value: currentSalary
+    function sendAmount(address emplAccount) external payable {
+        Employee storage _empl = employeeList[emplAccount];
+        (bool sent,) = empFundContract.call{
+            value: _empl.currentSalary
         }("");
         require(sent, "Transaction failed");
     }
