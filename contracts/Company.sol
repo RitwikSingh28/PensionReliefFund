@@ -11,22 +11,21 @@ contract Pension {
     }
 
     address owner; //company admin
-    address employee;
+    address employeeFund;
     uint currentSalary;
     uint pension = 0;
     salary_class class;
     uint timeSinceClassChange;
-    uint retireDate;
 
     //we will give address and initalSalary at time of deploying smart contract
     //we are deploying contract when the employee is hired
     constructor(
-        address _person,
+        address _employeeFund,
         uint _initSal,
         salary_class _class
     ) {
         owner = msg.sender;
-        employee = _person;
+        employeeFund = _employeeFund;
         currentSalary = _initSal;
         class = _class;
         timeSinceClassChange = block.timestamp;
@@ -73,7 +72,12 @@ contract Pension {
 
     //this function transfers half of salary to employee account
     //use call()
-    function sendAmount() external {}
+    function sendAmount() external payable {
+        (bool sent, bytes memory data) = employeeFund.call{
+            value: currentSalary
+        }("");
+        require(sent, "Transaction failed");
+    }
 
     //counter to store pension
     function storePension() external {}
