@@ -1,10 +1,42 @@
-//Just navigation between home page and see info page
-import React from 'react'
+import React from 'react';
+
+import { Nav, NavLink,  NavMenu, NavBtn, NavBtnLink } from './NavbarElements';
 
 const Navbar = () => {
-  return (
-    <div>Navbar</div>
-  )
-}
+    return (
+        <>
+            <Nav>
 
-export default Navbar
+                {/* <Bars /> */}
+
+                <NavMenu>
+
+                    <NavLink to='/' activeStyle>
+
+                        Home
+
+                    </NavLink>
+
+
+
+                    <NavLink to='/info' activeStyle>
+
+                        Info
+                    </NavLink>
+                </NavMenu>
+
+                {/* <NavBtn>
+
+                    <NavBtnLink to='/signin'>Sign In</NavBtnLink>
+
+                </NavBtn> */}
+
+            </Nav>
+
+        </>
+
+    );
+
+};
+
+export default Navbar;
