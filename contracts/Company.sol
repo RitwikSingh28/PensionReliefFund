@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.5.0 <0.9.0;
 
-contract Pension {
+contract Company {
     address public owner; //company admin
     address empFundContract; //employee fund contract address
     //enum for salary class
@@ -12,30 +12,35 @@ contract Pension {
         ClassA
     }
 
-
-    struct Employee{
+    struct Employee {
         address account;
         uint currentSalary;
         salary_class class;
         uint timeSinceClassChange;
         uint experience;
+        uint flag;
     }
 
-    mapping(address=>Employee) public employeeList;
-    
+    mapping(address => Employee) public employeeList;
 
-    constructor(address _fundContractAddress){
+    constructor(address _fundContractAddress) {
         empFundContract = _fundContractAddress;
-    } 
+    }
 
     //make a modifier if needed to set initial checks for repeated codes in various functions
 
     //function to increase salary
     //only deployer should be able to do this
     //set currentSalary to calculated salary
-    function increaseSalary(address empAccount,Employee memory _empl) external {
+    function increaseSalary(address empAccount, Employee memory _empl)
+        external
+        view
+    {
         require(msg.sender == owner, "Only deployer can change salary");
-        require(employeeList[empAccount] > 0,"This employee does not exist");
+        require(
+            employeeList[empAccount].flag != 0,
+            "This employee does not exist"
+        );
         uint _timeSinceClassChange = _empl.timeSinceClassChange;
         salary_class _class = _empl.class;
         uint _currentSalary = _empl.currentSalary;
@@ -77,9 +82,7 @@ contract Pension {
     //use call()
     function sendAmount(address emplAccount) external payable {
         Employee storage _empl = employeeList[emplAccount];
-        (bool sent,) = empFundContract.call{
-            value: _empl.currentSalary
-        }("");
+        (bool sent, ) = empFundContract.call{value: _empl.currentSalary}("");
         require(sent, "Transaction failed");
     }
 
