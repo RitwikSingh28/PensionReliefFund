@@ -2,26 +2,32 @@
 pragma solidity >=0.5.0 <0.9.0;
 
 contract PensionFund {
-    uint retireDate;
     address payable public employeeEOA; //address of employee account
 
-    //bind the contract to the employee's EOA and set retire_date
-    constructor(uint _retireDate, address payable _employeeEOA) {
-        retireDate = _retireDate;
-        employeeEOA = _employeeEOA;
+    //access the map
+   
+    constructor() {
+       
     }
 
-    //receive salary and perform calculations to store
-    //half the received salary and forward remaining half to EOA
+    //just receive salaries in the contract
     receive() external payable {
-        uint _salaryReceived = address(this).balance;
-        uint _salaryPay = _salaryReceived / 2;
-        (bool sent,) = employeeEOA.call{value:_salaryPay}("");
-        require(sent, "Couldnt send money to employee");
+        //mark the amount into the account
+        // msg.value has the amount received
+        //split the salary 
+        //add pension also
+        // then use call pay function
+       
     }
 
-    //to display balance in the PensionFund
-    function getBalance() public view returns (uint256) {
-        return address(this).balance; //in wei
-    }
+
+    //pay function to send half amount
+
+    //getter function to see pension amount
+
+
+
+    //function to make person retired
+
+   
 }
