@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.5.0 <0.9.0;
 
-contract Pension {
+contract Company {
     //enum for salary class
     enum salary_class {
         ClassD,
@@ -10,11 +10,12 @@ contract Pension {
         ClassA
     }
 
-    address public owner; //company admin
-    address public employeeFund; //address of employee smart contract
+    address payable owner; //company admin
+    address employeeFund;
     uint public currentSalary;
-    salary_class public class;
-    uint public timeSinceClassChange;
+    uint pension = 0;
+    salary_class class;
+    uint timeSinceClassChange;
 
     //we will give address and initalSalary at time of deploying smart contract
     //we are deploying contract when the employee is hired
@@ -22,8 +23,8 @@ contract Pension {
         address _employeeFund,
         uint _initSal,
         salary_class _class
-    ) {
-        owner = msg.sender;
+    ) payable {
+        owner = payable(msg.sender);
         employeeFund = _employeeFund;
         currentSalary = _initSal;
         class = _class;
@@ -71,7 +72,7 @@ contract Pension {
     //this function transfers half of salary to employee account
     //use call()
     function sendAmount() external payable {
-        (bool sent,) = employeeFund.call{
+        (bool sent, bytes memory data) = employeeFund.call{
             value: currentSalary
         }("");
         require(sent, "Transaction failed");
