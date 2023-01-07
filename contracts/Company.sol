@@ -48,7 +48,7 @@ contract Company {
 
         //check if employee scales up in paygrade after a certain period of time, say 1 year
         if (
-            block.timestamp >= _timeSinceClassChange + 365 days &&
+            block.timestamp >= _timeSinceClassChange + 30 seconds && //365 days or more depending on company's policy
             _class != salary_class.ClassA //no upgrade after reaching class A
         ) {
             _class = salary_class(uint(_class) + 1); //upgrade class by one
