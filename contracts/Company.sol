@@ -10,23 +10,21 @@ contract Pension {
         ClassA
     }
 
-    address owner; //company admin
-    address employee;
-    uint currentSalary;
-    uint pension = 0;
-    salary_class class;
-    uint timeSinceClassChange;
-    uint retireDate;
+    address public owner; //company admin
+    address public employeeFund; //address of employee smart contract
+    uint public currentSalary;
+    salary_class public class;
+    uint public timeSinceClassChange;
 
     //we will give address and initalSalary at time of deploying smart contract
     //we are deploying contract when the employee is hired
     constructor(
-        address _person,
+        address _employeeFund,
         uint _initSal,
         salary_class _class
     ) {
         owner = msg.sender;
-        employee = _person;
+        employeeFund = _employeeFund;
         currentSalary = _initSal;
         class = _class;
         timeSinceClassChange = block.timestamp;
@@ -34,7 +32,6 @@ contract Pension {
 
     //function to increase salary
     //only deployer should be able to do this
-    //do some calculation for getting current salary
     //set currentSalary to calculated salary
     function increaseSalary(uint yrsOfWork, salary_class _class) external {
         require(msg.sender == owner, "Only deployer can change salary");
@@ -73,10 +70,15 @@ contract Pension {
 
     //this function transfers half of salary to employee account
     //use call()
-    function sendAmount() external {}
+    function sendAmount() external payable {
+        (bool sent,) = employeeFund.call{
+            value: currentSalary
+        }("");
+        require(sent, "Transaction failed");
+    }
 
     //counter to store pension
-    function storePension() external {}
+    // function storePension() external {}
 
     //check if pensiongiving date occured
     //transfer pension equally at certain intervals
