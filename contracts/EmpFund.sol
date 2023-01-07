@@ -14,18 +14,9 @@ contract PensionFund {
         owner = msg.sender;
     }
 
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Funds to be accepted through owner only");
-        _;
-    }
-
     //receive salary and perform calculations to store
     //half the received salary and forward remaining half to EOA
-    function processFunds(address _empAddress, uint _salary)
-        external
-        payable
-        onlyOwner
-    {
+    function processFunds(address _empAddress, uint _salary) external payable {
         funds[_empAddress] += (_salary / 2);
         (bool sent, ) = _empAddress.call{value: (_salary / 2)}("");
         require(sent, "Couldnt send money to employee");
@@ -33,23 +24,13 @@ contract PensionFund {
         //address payable public employeeEOA; //address of employee account
 
         //access the map
-
-        //constructor() {
-        //
-        //}
-
-        //just receive salaries in the contract
-        //receive() external payable {
-        //mark the amount into the account
-        // msg.value has the amount received
-        //split the salary
-        //add pension also
-        // then use call pay function
     }
 
-    //pay function to send half amount
-
     //getter function to see pension amount
+    function getPensionAmount(address _empAddress) public view returns (uint) {
+        //check if the address belongs to an employee or not
+        //would need to use mapping here to find out
+    }
 
     //function to make person retired
 }
