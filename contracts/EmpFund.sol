@@ -2,21 +2,32 @@
 pragma solidity >=0.5.0 <0.9.0;
 
 contract PensionFund {
-    uint retireDate;
-    address payable public employeeEOA; //address of employee account
+    address internal owner;
+
+    mapping(address => uint) public funds;
+
+    // uint retireDate;
+    // address payable public employeeEOA; //address of employee account
 
     //bind the contract to the employee's EOA and set retire_date
-    constructor(uint _retireDate, address payable _employeeEOA) {
-        retireDate = _retireDate;
-        employeeEOA = _employeeEOA;
+    constructor() payable {
+        owner = msg.sender;
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Funds to be accepted through owner only");
+        _;
     }
 
     //receive salary and perform calculations to store
     //half the received salary and forward remaining half to EOA
-    receive() external payable {
-        uint _salaryReceived = address(this).balance;
-        uint _salaryPay = _salaryReceived / 2;
-        (bool sent,) = employeeEOA.call{value:_salaryPay}("");
+    function processFunds(address _empAddress, uint _salary)
+        external
+        payable
+        onlyOwner
+    {
+        funds[_empAddress] += (_salary / 2);
+        (bool sent, ) = _empAddress.call{value: (_salary / 2)}("");
         require(sent, "Couldnt send money to employee");
     }
 

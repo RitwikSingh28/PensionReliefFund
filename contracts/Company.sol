@@ -3,7 +3,7 @@ pragma solidity >=0.5.0 <0.9.0;
 
 contract Company {
     address public owner; //company admin
-    address empFundContract; //employee fund contract address
+    address payable empFundContract; //employee fund contract address
     //enum for salary class
     enum salary_class {
         ClassD,
@@ -13,7 +13,7 @@ contract Company {
     }
 
     struct Employee {
-        address account;
+        address payable account;
         uint currentSalary;
         salary_class class;
         uint timeSinceClassChange;
@@ -23,25 +23,32 @@ contract Company {
 
     mapping(address => Employee) public employeeList;
 
-    constructor(address _fundContractAddress) {
-        empFundContract = _fundContractAddress;
-    }
-
-
-     function addNewEmployee(address newEmpAccount,uint _initSal,salary_class _startClass) external{
-        require(msg.sender== owner,"Only deployer can add new employee");
-        Employee memory newEmp = Employee({
-            account : newEmpAccount,
-            currentSalary : _initSal,
-            class : _startClass,
-            timeSinceClassChange : 0,
-            experience : 0,
-            flag : true
-        });
-        employeeList[newEmpAccount] = newEmp;
+    constructor(address _fundContractAddress) payable {
+        owner = msg.sender;
+        empFundContract = payable(_fundContractAddress);
     }
 
     //make a modifier if needed to set initial checks for repeated codes in various functions
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only deployer can add new employee");
+        _;
+    }
+
+    function addNewEmployee(
+        address newEmpAccount,
+        uint _initSal,
+        salary_class _startClass
+    ) external onlyOwner {
+        Employee memory newEmp = Employee({
+            account: payable(newEmpAccount),
+            currentSalary: _initSal,
+            class: _startClass,
+            timeSinceClassChange: 0,
+            experience: 0,
+            flag: true
+        });
+        employeeList[newEmpAccount] = newEmp;
+    }
 
     //function to increase salary
     //only deployer should be able to do this
@@ -49,8 +56,8 @@ contract Company {
     function increaseSalary(address empAccount, Employee memory _empl)
         external
         view
+        onlyOwner
     {
-        require(msg.sender == owner, "Only deployer can change salary");
         require(
             employeeList[empAccount].flag == true,
             "This employee does not exist"
@@ -96,7 +103,13 @@ contract Company {
     //use call()
     function sendAmount(address emplAccount) external payable {
         Employee storage _empl = employeeList[emplAccount];
-        (bool sent, ) = empFundContract.call{value: _empl.currentSalary}("");
+        (bool sent, ) = empFundContract.call{value: _empl.currentSalary}(
+            abi.encodeWithSignature(
+                "processFunds(address,uint256)",
+                _empl.account,
+                _empl.currentSalary
+            )
+        );
         require(sent, "Transaction failed");
     }
 
