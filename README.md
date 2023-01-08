@@ -47,6 +47,12 @@ All working people
 
 3. Install node dependencies 
    - `npm install`
+   
+  
+## Ethereum Deployment on Goerli Testnet of our smart contracts: 
+
+- EmpFund.sol : https://goerli.etherscan.io/tx/0xc0e08731ff7ceef3e77d98a61181fd2413a66d9c5dbb98101ead18c223d6ce3e
+- Company.sol : https://goerli.etherscan.io/tx/0xdcf1bcd7cd5248ec92cf7723f0d7d2ad1176db1c92dfc97a7c723042344373e8
 
 
 ## Our budding contributors:
@@ -66,16 +72,4 @@ Thanks for visiting!!
 
 
 
-# Sample Hardhat Project
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
-
-Try running some of the following tasks:
-
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.js
-```
